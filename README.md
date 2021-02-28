@@ -1,6 +1,9 @@
 Setting up a new Repository
 ===============================
-- This is a template reporitory for setting up a new
+This is a template reporitory for setting up a new github repository.
+
+1. Clone this repository into your desired directory
+2. 
 
 Getting Started
 -------------------
