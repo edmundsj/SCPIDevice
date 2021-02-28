@@ -1,10 +1,13 @@
 Setting up a new Repository
 ===============================
+
 This is a template reporitory for setting up a new github repository.
 
+Getting Started
+------------------
 1. Clone this repository into your desired directory
 
-    ```git clone https://github.com/edmundsj/template.git```
+    ```git clone https://github.com/edmundsj/template.git <DESIRED_DIRECTORY>```
 
 2. Change the git hooks location:
 
@@ -17,26 +20,31 @@ This is a template reporitory for setting up a new github repository.
 
 5. Push to the new repository 
 
-    ``git push -u origin main```
+    ```git push -u origin main```
 
 6. Confirm the build works on the remote server - the action should pass
 7. Set github pages to use the ``docs/`` folder for github pages at the bottom
    of the "Settings" page
-8. Make your first HTML build from the ``docs/`` directory:
-
-    ```make html```
-
-9. Commit the generated documentation and push to github.
 
 Done! Your repository should be viewable on github pages: 
-https://edmundsj.github.io/REPO_NAME/
+https://edmundsj.github.io/REPO_NAME/, unit tests and a new docs build will run
+on every commit, 
 
-Getting Started
--------------------
+Adding Additional Unit Tests
+-------------------------------
+- Any time you want to add additional unit tests (and you should write these
+BEFORE you have fully working code) make sure to add them to the fullRunner.py
+test runner to ensure they are run on commit and on the remote server.
 
 
 Writing the Documentation
 ------------------------------
+- The documentation source is located in 
+
+Building the Documentation
+----------------------------
+Simply run ``make html`` from the ``docs/`` directory. This will compile the
+files in the ``source/`` directory. 
 
 Writing Tests and Adding them to the Test Runner
 ---------------------------------------------------
