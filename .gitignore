@@ -1,0 +1,26 @@
+# ignore all vim-generated swap files
+*.swp
+
+# ignore whatever this is
+.DS_STORE
+
+# ignore all log files
+*.log
+
+# Ignore all python cache files
+*.pyc
+# ignore everything in the pycache directory
+__pycache__/
+__pycache__
+
+_build/
+_templates/
+_static/
+
+.coverage
+
+build/
+dist/
+rcwa.egg-info/
+
+debugging_notes
