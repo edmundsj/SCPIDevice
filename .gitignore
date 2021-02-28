@@ -7,7 +7,8 @@
 # ignore all log files
 *.log
 
-docs/_build/doctrees/environment.pickle
+environment.pickle
+environment.pickle/
 
 # Ignore all python cache files
 *.pyc
