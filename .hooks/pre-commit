@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import os
+import sys
+
+os.system('cd docs/; make html; cd ../;')
+import test.fullRunner # run all unit tests that can be run quickly
