@@ -27,40 +27,7 @@ jobs:
         $CONDA/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with unittest using full test suite
       run: |
-        $CONDA/bin/coverage run rcwa/test/fullRunner.py
+        $CONDA/bin/coverage run test/fullRunner.py
         # Github actions does not currently have a good solution for python test coverage
         #- name: Coveralls Finished
         #uses: AndreMiras/coveralls-python-action@develop
-    - name: Build python package tarball
-      run:
-        $CONDA/bin/python setup.py sdist bdist_wheel
-    - name: Publish distribution to test PyPi
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_test_password2 }}
-        repository_url: https://test.pypi.org/legacy/
-        verbose: true
-    - name: Download and install from TestPyPi
-      run:
-        pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple rcwa
-    - name: Run full testPyPi test suite
-      run:
-        python -m rcwa.test.fullRunner
-    - name: Find me my branch name
-      run: 
-        echo ${{github.ref}}
-    - name: Publish distribution to PyPi
-      uses: pypa/gh-action-pypi-publish@master
-      if: github.ref == 'refs/heads/master'
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password2 }}
-        verbose: true
-    - name: Download from PyPi
-      run:
-        pip uninstall -y rcwa;
-        pip install rcwa
-    - name: Run full PyPi Test Suite
-      run:
-        python -m rcwa.test.fullRunner

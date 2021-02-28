@@ -1,0 +1,21 @@
+name: base
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - coverage
+  - coveralls
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+  - pyserial
+  - pyvisa
+  - scipy
+  - sphinx
+  - sphinx_rtd_theme
+  - sphinxcontrib-jsmath
+  - setuptools
+  - wheel
+  - pyyaml
