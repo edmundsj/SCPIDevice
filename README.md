@@ -1,7 +1,9 @@
 Setting up a new Repository
 ===============================
 
-This is a template reporitory for setting up a new github repository.
+This is a template reporitory for setting up a new github repository for
+sphinx-based documentation integrated with github pages, also integrated with
+github actions for running unit tests, and (in the future) deploying to pyPi.
 
 Getting Started
 ------------------
@@ -44,10 +46,15 @@ Writing the Documentation
 Building the Documentation
 ----------------------------
 Simply run ``make html`` from the ``docs/`` directory. This will compile the
-files in the ``source/`` directory. 
+files in the ``source/`` directory, and place them in the main ``docs/``
+directory where github pages can find them.
 
 Writing Tests and Adding them to the Test Runner
 ---------------------------------------------------
+The tests are run from github hooks prior to each commit and on the remote
+server with the file located in ``test/fullRunner.py``. This is meant to be a
+comprehensive set of unit tests, and any additional test files should be added
+to that file.
 
 
 Contributing
