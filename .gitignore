@@ -19,6 +19,7 @@ __pycache__
 
 build/
 dist/
+_sources/
 rcwa.egg-info/
 
 debugging_notes
