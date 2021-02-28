@@ -8,7 +8,8 @@ This is a template reporitory for setting up a new github repository.
 4. Change this repository's name with 
    ```git remote set-url origin <NEW_REPO_URL>```
 5. Push to the new repository with ``git push -u origin main``
-6. Push to the github pages branch with ``git 
+6. Push to the github pages branch with 
+    ```git subtree push --prefix docs/html origin gh-pages```
 6. Confirm the build works on the remote server
 
 Getting Started
