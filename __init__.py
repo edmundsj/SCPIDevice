@@ -1,1 +1,1 @@
-from source.some_module import SomeClass
+from .source.some_module import SomeClass
