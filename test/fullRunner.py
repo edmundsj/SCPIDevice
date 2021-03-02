@@ -4,6 +4,7 @@ Run all the core unit tests, not the lengthy and major integration tests
 print("RUNNING ALL UNIT TESTS ---------")
 import unittest
 import sys
+import context
 sys.path.append('test') # Allows this runner to be run from the main directory
 
 import test_something

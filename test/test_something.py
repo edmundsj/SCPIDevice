@@ -1,6 +1,8 @@
+import context
 import unittest
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
+import some_module
 
 class TestSomething(unittest.TestCase):
     def setUp(self):
@@ -14,8 +16,9 @@ class TestSomething(unittest.TestCase):
         """
         Tests that something is OK.
         """
+        some_class = some_module.SomeClass()
         actual_number = 1.0
-        desired_number = 1.0
+        desired_number = some_class.something
         assert_equal(actual_number, desired_number)
 
     def tearDown(self):

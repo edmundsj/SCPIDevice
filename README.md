@@ -1,5 +1,6 @@
 Setting up a new Repository
 ===============================
+[![Build](https://github.com/edmundsj/template/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/edmundsj/template/actions/workflows/python-package-conda.yml)
 
 This is a template reporitory for setting up a new github repository for
 sphinx-based documentation integrated with github pages, also integrated with
@@ -27,6 +28,8 @@ Getting Started
 6. Confirm the build works on the remote server - the action should pass
 7. Set github pages to use the ``docs/`` folder for github pages at the bottom
    of the "Settings" page
+8. After your actions pass, create a status badge from the "Actions" section on
+   github and paste it up top.
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/, unit tests and a new docs build will run
