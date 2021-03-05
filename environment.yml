@@ -5,6 +5,8 @@ channels:
   - defaults
 dependencies:
   - coverage
+  - pytest
+  - pytest-cov
   - coveralls
   - matplotlib
   - numpy
