@@ -1,5 +1,5 @@
-import context
-import some_module
+from . import context
+import SCPIDevice
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
 
