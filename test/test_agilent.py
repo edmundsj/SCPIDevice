@@ -46,8 +46,9 @@ def test_reset(agilent):
 
 def test_set_voltage(agilent):
     desired_voltage = 0.5
-    agilent['device'].voltage = desired_voltage
-    actual_voltage = agilent['device'].voltage
+    agilent['device'].amplitude= desired_voltage
+    actual_voltage = agilent['device'].amplitude
+    breakpoint()
     assert_equal(actual_voltage, desired_voltage)
 
 def test_set_frequency(agilent):
@@ -72,3 +73,6 @@ def test_offset(agilent):
     agilent['device'].offset_voltage = offset_desired
     offset_actual = agilent['device'].offset_voltage
     assert_equal(offset_actual, offset_desired)
+
+def test_verify(agilent):
+    agilent['device'].verify()

@@ -1,14 +1,13 @@
-import os
-import sys
-file_location = os.path.dirname(os.path.abspath(__file__))
-source_location = os.path.abspath(os.path.join(file_location, '..', 'source/'))
-
-sys.path.insert(0, source_location)
-from SCPIDevice import SCPIDevice
+from pyscpi import SCPIDevice
+import numpy as np
 
 class Agilent33210A(SCPIDevice):
     def __init__(self, lib_type='pyvisa', resource_index=0):
         super().__init__(lib_type=lib_type, resource_index=resource_index)
+        self._frequency = 1000 # Default frequency
+        self._amplitude = 0.1
+        self._offset_voltage = 0
+        self._output_on = False
 
     @property
     def frequency(self):
@@ -17,16 +16,35 @@ class Agilent33210A(SCPIDevice):
 
     @frequency.setter
     def frequency(self, frequency):
+        self._frequency = frequency
         self.write_line('FREQUENCY ' + str(frequency) + 'HZ')
 
     @property
-    def amplitude(self):
-        volt = self.query('VOLTAGE?')
-        return float(volt)
+    def amplitude(self, mode='amp'):
+        amplitude = float(self.query('VOLTAGE?'))
+        if mode == 'rms':
+            amplitude /= np.sqrt(2)
+        elif mode == 'pkpk':
+            amplitude *= 2
+        elif mode == 'amp':
+            amplitude *= 1
+
+        return float(amplitude)
 
     @amplitude.setter
-    def amplitude(self, volt):
-        self.write_line('VOLTAGE ' + str(volt) + 'V')
+    def amplitude(self, amplitude, mode='amp'):
+        """ Sets the amplitude of the excitation (Vpp)
+
+        :param amplitude: Amplitude of excitation (Vpp)
+        """
+        if mode == 'rms':
+            amplitude *= np.sqrt(2)
+        elif mode == 'pkpk':
+            amplitude *= 0.5
+        elif mode == 'amp':
+            amplitude *= 1
+        self._amplitude = amplitude
+        self.write_line('VOLTAGE ' + str(amplitude) + 'V')
 
     @property
     def offset_voltage(self):
@@ -34,8 +52,9 @@ class Agilent33210A(SCPIDevice):
         return float(volt)
 
     @offset_voltage.setter
-    def offset_voltage(self, volt):
-        self.write_line('VOLTAGE:OFFSET ' + str(volt) + 'V')
+    def offset_voltage(self, offset):
+        self._offset_voltage = offset
+        self.write_line('VOLTAGE:OFFSET ' + str(offset) + 'V')
 
     @property
     def output_on(self):
@@ -43,8 +62,23 @@ class Agilent33210A(SCPIDevice):
 
     @output_on.setter
     def output_on(self, output):
+        self._output_on = output
         if output == True:
             output_string = 'ON'
         else:
             output_string = 'OFF'
         self.write_line('OUTPUT ' + output_string)
+
+    def verify(self):
+        """
+        Verifies that our system state matches our believed state
+        """
+        actual_amplitude = self.amplitude
+        actual_frequency = self.frequency
+        actual_output_on = self.output_on
+        actual_offset_voltage = self.offset_voltage
+        assert actual_amplitude == self._amplitude
+        assert actual_frequency== self._frequency
+        assert actual_output_on== self._output_on
+        assert actual_offset_voltage == self._offset_voltage
+        return True

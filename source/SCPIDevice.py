@@ -20,7 +20,7 @@ class SCPIDevice:
             print("Multiple resources found")
             for i in range(len(resource_list)):
                 print(f'{i}: {resource_list[i]}')
-            print('Defaulting to {resource_index}. Pass different ' + \
+                print(f'Defaulting to {i}: {resource_index}. Pass different ' + \
                   'resource_index if desired')
         device = rm.open_resource(resource_list[resource_index])
         device.read_termination = '\n'

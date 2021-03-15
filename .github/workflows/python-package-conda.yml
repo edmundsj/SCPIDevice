@@ -31,3 +31,14 @@ jobs:
         # Github actions does not currently have a good solution for python test coverage
         #- name: Coveralls Finished
         #uses: AndreMiras/coveralls-python-action@develop
+    - name: Upload coverage report to codecov
+      uses: codecov/codecov-action@v1
+      with: 
+        token: ${{ secrets.codecov_token }}
+        files: ./coverage.xml
+        flags: unittests
+        env_vars: OS,PYTHON
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        path_to_write_report: ./coverage/codecov_report.txt
+        verbose: true
