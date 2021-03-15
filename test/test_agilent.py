@@ -48,7 +48,6 @@ def test_set_voltage(agilent):
     desired_voltage = 0.5
     agilent['device'].amplitude= desired_voltage
     actual_voltage = agilent['device'].amplitude
-    breakpoint()
     assert_equal(actual_voltage, desired_voltage)
 
 def test_set_frequency(agilent):
