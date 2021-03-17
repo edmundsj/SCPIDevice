@@ -5,25 +5,28 @@ import pytest
 from numpy.testing import assert_equal, assert_allclose
 
 @pytest.fixture
-def sdg():
-    print("OpeningSDG device...")
-    sdg_parameters = {
+def agilent():
+    print("Opening Agilent device...")
+    agilent_parameters = {
         'device': SCPIDevice(),
         'id': 'Agilent Technologies,33210A,MY48005679,1.04-1.04-22-2',
     }
-    yield sdg_parameters
-    print("Closing SDG device...")
-    sdg_parameters['device'].close()
+    yield agilent_parameters
+    print("Closing Agilent device...")
+    agilent_parameters['device'].close()
 
-def test_visa_init(sdg):
+def test_visa_init(agilent):
     """
     Check that we get back the correct ID of our device
     """
-    actual_device = sdg['device'].device
+    actual_device = agilent['device'].device
     desired_type = pyvisa.resources.usb.USBInstrument
     assert_equal(type(actual_device), desired_type)
 
-def test_identify(sdg):
-    desired_name = sdg['id']
-    actual_name = sdg['device'].identify()
+def test_identify(agilent):
+    desired_name = agilent['id']
+    actual_name = agilent['device'].identify()
     assert_equal(actual_name, desired_name)
+
+def test_read_termination(agilent):
+    desired_termination = '\n'

@@ -2,8 +2,12 @@ from pyscpi import SCPIDevice
 import numpy as np
 
 class Agilent33210A(SCPIDevice):
-    def __init__(self, lib_type='pyvisa', resource_index=0):
-        super().__init__(lib_type=lib_type, resource_index=resource_index)
+    def __init__(self, lib_type='pyvisa',
+            device_name='Agilent Technologies,33210A,MY48005679,1.04-1.04-22-2', read_termination='\n', write_termination='\n'):
+        super().__init__(
+                lib_type=lib_type, device_name=device_name,
+                read_termination=read_termination,
+                write_termination=write_termination)
         self._frequency = 1000 # Default frequency
         self._amplitude = 0.1
         self._offset_voltage = 0
