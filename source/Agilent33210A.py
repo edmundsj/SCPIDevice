@@ -2,6 +2,8 @@ from pyscpi import SCPIDevice
 import numpy as np
 
 class Agilent33210A(SCPIDevice):
+    MIN_AMPLITUDE = 0.01
+
     def __init__(self, lib_type='pyvisa',
             device_name='Agilent Technologies,33210A,MY48005679,1.04-1.04-22-2', read_termination='\n', write_termination='\n'):
         super().__init__(
@@ -33,6 +35,7 @@ class Agilent33210A(SCPIDevice):
         elif mode == 'amp':
             amplitude *= 1
 
+
         return float(amplitude)
 
     @amplitude.setter
@@ -47,6 +50,12 @@ class Agilent33210A(SCPIDevice):
             amplitude *= 0.5
         elif mode == 'amp':
             amplitude *= 1
+        if amplitude < 0.01:
+            amplitude = 0.01
+            self._amplitude = amplitude
+            self.write_line('VOLTAGE ' + str(amplitude) + 'V')
+            raise UserWarning(f'Attempted to set amplitude to {amplitude}. Lowest possible amplitude for this device is {self.MIN_AMPLITUDE}. Setting amplitude to {self.MIN_AMPLITUDE}')
+
         self._amplitude = amplitude
         self.write_line('VOLTAGE ' + str(amplitude) + 'V')
 

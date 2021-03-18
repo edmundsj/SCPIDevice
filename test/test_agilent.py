@@ -56,6 +56,15 @@ def test_set_amplitude(agilent):
     assert_equal(actual_voltage, desired_voltage)
 
 @pytest.mark.agilent
+def test_set_amplitude_limit(agilent):
+    desired_voltage = 0.009 # Smaller than we can handle
+    minimum_amplitude = 0.01
+    with pytest.raises(UserWarning):
+        agilent['device'].amplitude = desired_voltage
+
+    assert_equal(agilent['device'].amplitude, minimum_amplitude)
+
+@pytest.mark.agilent
 def test_set_frequency(agilent):
     desired_frequency = 100
     agilent['device'].frequency = desired_frequency
@@ -108,4 +117,5 @@ def test_verify_incorrect_output(agilent):
     agilent['device']._output_on = True # This is just wrong
     with pytest.raises(AssertionError):
         agilent['device'].verify()
+
 
