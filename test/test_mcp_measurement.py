@@ -1,6 +1,7 @@
 import pytest
-from pyscpi import MCP, Agilent
+from pyscpi import MCP, Agilent, twos_to_integer
 from numpy.testing import assert_equal
+import numpy as np
 
 @pytest.fixture
 def mcp():
@@ -10,15 +11,22 @@ def mcp():
     device.reset()
     device.close()
 
+@pytest.fixture
+def agilent():
+    device = Agilent()
+    device.reset()
+    yield {'device': device}
+    device.reset()
+    device.close()
+
 @pytest.mark.mcp
-def test_measure(mcp):
+def test_measure_simple(mcp):
     """
     Asserts that the result of a measurement is a set of three bytes, and that no more than 3 bytes are returned
     """
     desiredMeasurements = 1
-    measuredData = mcp['device'].Measure()
+    measuredData = mcp['device'].measure()
     assert_equal(len(measuredData), 3)
-    assert_equal(mcp['device'].inWaiting(), 0) # Verify that there ore no bytes left to be read
 
 
 @pytest.mark.mcp
@@ -31,13 +39,10 @@ def test_measure_byte_count(mcp):
 
     for desiredMeasurements in desiredMeasurementsList:
         desiredBytes = desiredMeasurements * 3
-        mcp['device'].Configure(desiredMeasurements)
-        data = mcp['device'].Measure()
+        mcp['device'].n_samples = desiredMeasurements
+        data = mcp['device'].measure()
         actualBytes = len(data)
-        assert_equal(actualBytes, desiredBytes,
-                msg=f'Received wrong number of bytes. Actual bytes: {actualBytes}.' + \
-                f'Desired bytes: {desiredBytes}' + \
-                f'attempt restart of the arduino.\n')
+        assert_equal(actualBytes, desiredBytes)
 
 @pytest.mark.skip
 @pytest.mark.mcp
@@ -48,16 +53,13 @@ def test_measure_large_byte_count(mcp):
     """
     desiredMeasurements = int(500000)
     desiredBytes = desiredMeasurements * 3
-    mcp['device'].Configure(desiredMeasurements)
+    mcp['device'].n_samples = desiredMeasurements
     data = mcp['device'].Measure() # If this isn't blocking, it should probably be made blocking.
     actualBytes = len(data)
-    assert_equal(actualBytes, desiredBytes,
-                msg=f'Received wrong number of bytes. Actual bytes: {actualBytes}.' + \
-                f'Desired bytes: {desiredBytes}' + \
-                f'attempt restart of the arduino.\n')
+    assert_equal(actualBytes, desiredBytes)
 
 @pytest.mark.mcp
-def test_synchronization_points(mcp):
+def test_synchronization_points(mcp, agilent):
     """
     Confirm that we get the expected number of data synchronization events when we sample in a given time period.
     Assumes an external 1kHz square wave is being applied to pin 20 on the Teensy.
@@ -66,21 +68,18 @@ def test_synchronization_points(mcp):
     desired_sync_pulses = 8
     n_samples = int(mcp['device'].sampling_frequency/f_sync * desired_sync_pulses)
 
-    breakpoint()
-    agilent = Agilent()
-    agilent.frequency = f_sync
-    agilent.output_on = True
-    agilent.verify()
+    agilent['device'].frequency = f_sync
+    agilent['device'].output_on = True
+    agilent['device'].verify()
 
     mcp['device'].n_samples = n_samples
     mcp['device'].measure()
 
     actual_sync_pulses = mcp['device'].sync_points()
-    agilent.output_on = False
-    assert_equal(actual_sync_pulses, desired_sync_pulses, msg='Failed to synchronize to external function generator. Is it turned on?')
+    assert_equal(actual_sync_pulses, desired_sync_pulses)
 
 @pytest.mark.mcp
-def test_synchronization_data(mcp):
+def test_synchronization_data(mcp, agilent):
     """
     Verify that the synchronization data we get is "reasonable" - that is that points are separated by very close
     to their expected frequency of 1kHz. This assumes there is a square wave at 1kHz sending data to the Teensy.
@@ -89,6 +88,11 @@ def test_synchronization_data(mcp):
     desired_sync_pulses = 3
     n_samples = int(
             mcp['device'].sampling_frequency/f_sync * desired_sync_pulses)
+
+    agilent['device'].frequency = f_sync
+    agilent['device'].output_on = True
+    agilent['device'].verify()
+
     mcp['device'].n_samples = n_samples
     mcp['device'].measure()
     actual_sync_pulses = mcp['device'].sync_points()
@@ -98,9 +102,9 @@ def test_synchronization_data(mcp):
 
     # check that the data has the right number of bytes in it
     assert_equal(len(syncData), desiredSyncBytes)
-    measurementPoints = twosToInteger(syncData)
+    measurementPoints = twos_to_integer(syncData)
     measurementDeltas = np.diff(measurementPoints)
     timeDeltas = 1 / mcp['device'].sampling_frequency * measurementDeltas
     approxFrequencies = np.reciprocal(timeDeltas)
-    np.testing.assert_allclose(approxFrequencies[0], f_sync, atol=1e-4)
-    assertAlmostEqual(approxFrequencies[1], f_sync)
+    approx_frequency = np.mean(approxFrequencies)
+    np.testing.assert_allclose(approx_frequency, f_sync, atol=1e-2)

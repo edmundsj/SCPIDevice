@@ -2,6 +2,7 @@ from pyscpi import Agilent
 import numpy as np
 import pyvisa
 import pytest
+import pint
 from numpy.testing import assert_equal, assert_allclose
 
 @pytest.fixture
@@ -48,7 +49,7 @@ def test_reset(agilent):
     assert_equal(actual_offset, desired_offset)
 
 @pytest.mark.agilent
-def test_set_voltage(agilent):
+def test_set_amplitude(agilent):
     desired_voltage = 0.5
     agilent['device'].amplitude= desired_voltage
     actual_voltage = agilent['device'].amplitude
@@ -81,5 +82,30 @@ def test_offset(agilent):
     assert_equal(offset_actual, offset_desired)
 
 @pytest.mark.agilent
-def test_verify(agilent):
+def test_verify_correct(agilent):
     agilent['device'].verify()
+
+@pytest.mark.agilent
+def test_verify_incorrect_amplitude(agilent):
+    agilent['device']._amplitude = 500 # This is just wrong
+    with pytest.raises(AssertionError):
+        agilent['device'].verify()
+
+@pytest.mark.agilent
+def test_verify_incorrect_frequency(agilent):
+    agilent['device']._frequency = 99 # This is just wrong
+    with pytest.raises(AssertionError):
+        agilent['device'].verify()
+
+@pytest.mark.agilent
+def test_verify_incorrect_offset(agilent):
+    agilent['device']._offset_voltage = 0.2 # This is just wrong
+    with pytest.raises(AssertionError):
+        agilent['device'].verify()
+
+@pytest.mark.agilent
+def test_verify_incorrect_output(agilent):
+    agilent['device']._output_on = True # This is just wrong
+    with pytest.raises(AssertionError):
+        agilent['device'].verify()
+

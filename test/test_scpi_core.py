@@ -15,6 +15,7 @@ def agilent():
     print("Closing Agilent device...")
     agilent_parameters['device'].close()
 
+@pytest.mark.agilent
 def test_visa_init(agilent):
     """
     Check that we get back the correct ID of our device
@@ -23,10 +24,12 @@ def test_visa_init(agilent):
     desired_type = pyvisa.resources.usb.USBInstrument
     assert_equal(type(actual_device), desired_type)
 
+@pytest.mark.agilent
 def test_identify(agilent):
     desired_name = agilent['id']
     actual_name = agilent['device'].identify()
     assert_equal(actual_name, desired_name)
 
+@pytest.mark.agilent
 def test_read_termination(agilent):
     desired_termination = '\n'

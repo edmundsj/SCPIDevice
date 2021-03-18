@@ -81,8 +81,12 @@ class Agilent33210A(SCPIDevice):
         actual_frequency = self.frequency
         actual_output_on = self.output_on
         actual_offset_voltage = self.offset_voltage
-        assert actual_amplitude == self._amplitude
-        assert actual_frequency== self._frequency
-        assert actual_output_on== self._output_on
-        assert actual_offset_voltage == self._offset_voltage
+        if actual_amplitude != self._amplitude:
+            raise AssertionError(f'Amplitudes not correct. Actual: {actual_amplitude} vs desired: {self._amplitude}')
+        if actual_frequency != self._frequency:
+            raise AssertionError(f'Frequency not correct. Actual: {actual_frequency} vs desired: {self._frequency}')
+        if actual_output_on != self._output_on:
+            raise AssertionError(f'Output state not correct. Actual: {actual_output_on}, desired: {self._output_on}')
+        if actual_offset_voltage != self._offset_voltage:
+            raise AssertionError(f'Offset voltage not correct. Actual {actual_offset_voltage}, desired: {self._offset_voltage}')
         return True

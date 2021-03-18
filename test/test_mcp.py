@@ -16,6 +16,7 @@ def mcp():
     mcp_parameters['device'].reset()
     mcp_parameters['device'].close()
 
+@pytest.mark.mcp
 def test_visa_init(mcp):
     """
     Check that we get back the correct ID of our device
@@ -24,13 +25,16 @@ def test_visa_init(mcp):
     desired_type = pyvisa.resources.serial.SerialInstrument
     assert_equal(type(actual_device), desired_type)
 
+@pytest.mark.mcp
 def test_identify(mcp):
     desired_name = mcp['id']
     actual_name = mcp['device'].identify()
     assert_equal(actual_name, desired_name)
 
+@pytest.mark.mcp
 def test_reset(mcp):
     pass
 
+@pytest.mark.mcp
 def test_verify(mcp):
     pass

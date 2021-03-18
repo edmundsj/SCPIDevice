@@ -40,6 +40,6 @@ def count_to_voltage(data, numberBits=24, maxVoltage=3.3, differential=False):
     return np.multiply(data, conversionFactor)
 
 def twos_to_voltage(data, bytesPerInteger=3, maxVoltage=3.3, firstByte='msb', differential=False):
-    intermediateData = twosToInteger(data, firstByte=firstByte, bytesPerInteger=bytesPerInteger)
-    voltages = countToVoltage(intermediateData, maxVoltage=maxVoltage, differential=differential)
+    intermediateData = twos_to_integer(data, firstByte=firstByte, bytesPerInteger=bytesPerInteger)
+    voltages = count_to_voltage(intermediateData, maxVoltage=maxVoltage, differential=differential)
     return voltages

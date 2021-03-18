@@ -1,11 +1,13 @@
 import pyvisa
-from pyscpi import SCPIDevice, twos_to_voltage
+from pyscpi import SCPIDevice, twos_to_voltage, twos_to_integer, MotorController
 import os
 import numpy as np
+import pandas as pd
+import json
 
-class MCP3561(SCPIDevice):
+class MCP3561(SCPIDevice, MotorController):
     def __init__(self, lib_type='pyvisa',
-            device_name='MCP3561 Dev Board v1', read_termination='\r\n', write_termination='\n', sampling_frequency=9760,
+            device_name='MCP3561 Dev Board v1', read_termination='\r\n', write_termination='\n', sampling_frequency=9765.65,
             n_samples=1, offset_voltage=1.138):
         self.lib_type = lib_type
         super().__init__(lib_type=lib_type, device_name=device_name,
@@ -15,6 +17,7 @@ class MCP3561(SCPIDevice):
         self._n_bytes = n_samples * 3 + 1
         self._n_synchronization_pulses = 0
         self.sampling_frequency = sampling_frequency
+        self.offset_voltage = offset_voltage
 
         self._microsteps_per_nm = 30.3716*1.011 # calibrated from 800nm - 1700nm. Optimized for 5nm steps.
         self._microsteps_correction = -6.17*1e-6
@@ -67,6 +70,28 @@ class MCP3561(SCPIDevice):
 
         return measured_bytes
 
+    def sync_points(self):
+        """
+        Get the number of points we will use for synchronization and subsequent sampling
+
+        :return syncPoints: The number of pulses measured from the signal generator
+        """
+        return int(self.query('SYNC:NUMPOINTS?'))
+
+    def sync_data(self):
+        """
+        Get the measurement numbers that each synchronization pulse corresponds to.
+
+        :returns data: an array of integers corresponding to the measurement indices of the synchronization point events.
+
+        """
+        number_points = self.sync_points()
+        self.write_line('SYNC:DATA?')
+        number_bytes = number_points*3 +1
+        measuredData = self.read_bytes(number_bytes)
+        measuredData = np.frombuffer(measuredData[1:], dtype=np.uint8) # Discard the leading # and the newline at the end
+        return measuredData
+
     def generateData(self, n_samples=1000, sync=True):
         """
         :param n_samples: The number of points of data to collect
@@ -77,7 +102,8 @@ class MCP3561(SCPIDevice):
         voltages = twos_to_voltage(self.measure()) - self.offset_voltage
         times = np.arange(0, n_samples/ self.sampling_frequency,
                           1/self.sampling_frequency)
-        pi_phase_indices = twosToInteger(self.getSyncData())
+        pi_phase_indices = twos_to_integer(self.sync_data())
+        pi_phase_indices = pi_phase_indices[pi_phase_indices<n_samples]
         sync_column = np.zeros(n_samples, dtype=np.int)
         sync_column[pi_phase_indices] = 1 # Sync event
 
